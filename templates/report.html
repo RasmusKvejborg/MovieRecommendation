@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Report</title>
+    <link rel="stylesheet" href="{{url_for('static',filename='CSS/main.css')}}">
+</head>
+<body>
+<br><br>
+<form method="POST">
+    <h3>Report something about '{{ session["film"] }}':</h3>
+
+    <input name="titleReport" type="submit" value="Report the title">
+</form>
+
+<br>
+
+<form method="POST">
+    Or:
+    <br><br>
+    Report a specific trait (select trait):
+    <br>
+    <br>
+        <select name="traitReportSelect" method="GET">
+
+            <option value="{{traits[0]}}" selected>
+                {{ traits[0] }}
+            </option>
+            {% for x in traits[1:] %}
+                <option value="{{x}}">
+                    {{x}}
+                </option>
+            {% endfor %}
+
+        </select>
+    <input name="traitReport" type="submit" value="Report trait">
+</form>
+
+
+
+
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+        {% for msg in messages %}
+            <p>{{msg}}</p>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+
+            <div style="text-align: center">
+        <a href="/">
+        <p>Home</p>
+        </a>
+        </div>
+
+
+
+
+
+<script>
+if ( window.history.replaceState ) {
+  window.history.replaceState( null, null, window.location.href );
+}
+</script>
+</body>
+</html>

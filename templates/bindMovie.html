@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Bind movie</title>
+    <link rel="stylesheet" href="{{url_for('static',filename='CSS/main.css')}}">
+
+</head>
+<body>
+
+<br><br><br><br>
+
+
+    <form method="POST" action="/thankyou">
+
+<p>{{ text }}</p>
+    <br>
+    Beskrivelsen passer også til denne film:
+        <select name="movie3" method="GET">
+        <option value="{{fetchMovieNames[0]}}" selected>
+            {{fetchMovieNames[0]}}
+        </option>
+        {% for x in fetchMovieNames[1:] %}
+            <option value="{{x}}">
+               {{x}}
+            </option>
+        {% endfor %}
+    </select>
+<br><br>
+
+<input name="combine" type="submit" value="Combine movies">
+</form>
+
+
+    <br><br><br><br>
+
+
+    <div style="text-align: center">
+        <a href="/thankyou">
+            <p>No, I'm done</p>
+        </a>
+    </div>
+
+    <br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+
+    <div style="text-align: center">
+        <a href="{{url_for('addMovies',type=session['trait3'])}}">
+            <p>Missing a movie in the list? Add it!</p>
+        </a>
+    </div>
+
+<!--fjerner den her confirm form resubmission message i browseren som jeg fik før-->
+<script>
+if ( window.history.replaceState ) {
+  window.history.replaceState( null, null, window.location.href );
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Recommend me a movie</title>
+    <link rel="stylesheet" href="{{url_for('static',filename='CSS/main.css')}}">
+</head>
+<body>
+<br>
+<br>
+<h2>Recommend me a movie</h2>
+<br>
+<br>
+    <div class="select">
+<!--1. vælkg en film du har set før-->
+
+    <form method="POST" action="/select">
+        <select name="movie" method="GET">
+                <option selected disabled>Vælg en film du har set før</option>
+            <option value="{{fetchMovieNames[0]}}">
+                {{fetchMovieNames[0]}}
+            </option>
+            {% for x in fetchMovieNames[1:] %}
+                <option value="{{x}}">
+                   {{x}}
+                </option>
+            {% endfor %}
+        </select>
+
+        <br><br>
+    <input name="vælg film" type="submit" value="Vælg film" id="vælgFilm">
+    </form>
+
+
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+
+
+<!--tilføj ny film til database-->
+        <div style="text-align: center">
+        <a href="/addMovie">
+        <p>Kan du ikke finde din favoritfilm? Tilføj den til databasen!</p>
+        </a>
+        </div>
+
+
+<!--    </div>-->
+</body>
+</html>

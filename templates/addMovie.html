@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add movie to database</title>
+    <link rel="stylesheet" href="{{url_for('static',filename='CSS/main.css')}}">
+</head>
+<body>
+
+
+<form method="POST" action="/bindMovie">
+<h2>Foreslå en ny film til databasen</h2>
+    <br>
+Filmens titel: <br> <input type="text" name="search">
+    <br> <br>
+(evt.) årgang: <br> <input type="number" name="årgang">
+    <br> <br>
+
+    <!--request.args tager den type som jeg har smidt ind i URL_FOR, for at få form data korrekt ind. Se linket "missing a movie" under Bindmovie-->
+Hvad kunne du lide ved filmen? (vær specifik): <br> <input type="text" name="trait3" style="width: 600px;" value="
+{% if request.args.get('type') %}
+{{request.args.get('type')}}
+
+{% endif %}
+
+">
+
+    <br><br>
+
+<!--Kender du andre film med dette specifikke karaktertræk?: <input type="text" name="search">-->
+
+<input name="searchform" type="submit" value="Tilføj film">
+
+</form>
+
+    <br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+
+            <div>
+        <a href="/">
+        <p>Tilbage til forsiden</p>
+        </a>
+        </div>
+
+
+</body>
+</html>

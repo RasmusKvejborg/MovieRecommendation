@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add trait</title>
+    <link rel="stylesheet" href="{{url_for('static',filename='CSS/main.css')}}">
+</head>
+<body>
+
+
+
+<form method="POST" action="/bindMovie">
+<h2>Add trait to {{session["film"]}}</h2>
+    <br>
+
+Add a trait  to '{{session["film"]}}' <br>(Please be specific):
+    <br><br> <input type="text" name="trait3" style="width:600px;">
+
+    <br><br>
+
+<!--Kender du andre film med dette specifikke karaktertræk?: <input type="text" name="search">-->
+
+<input name="addTrait" type="submit" value="Add trait">
+
+
+
+
+
+
+
+
+
+
+
+
+
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+        <a href="/">
+        <p>Home</p>
+        </a>
+        </div>
+
+
+
+
+
+<script>
+if ( window.history.replaceState ) {
+  window.history.replaceState( null, null, window.location.href );
+}
+</script>
+</body>
+</html>

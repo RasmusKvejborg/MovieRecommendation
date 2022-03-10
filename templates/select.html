@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Select</title>
+    <link rel="stylesheet" href="{{url_for('static',filename='CSS/main.css')}}">
+</head>
+<body>
+<br>
+<br>
+
+<!--2. hvad kunne du lide ved filmen?-->
+
+    <form method="POST">
+        <h2>2. Hvad kunne du lide ved '{{session["film"]}}'?</h2>
+        <br><br>
+        <select name="trait" method="GET">
+            <option selected disabled>Select a trait</option>
+            <option value="{{traits[0]}}">
+                {{ traits[0] }}
+            </option>
+            {% for x in traits[1:] %}
+                <option value="{{x}}">
+                    {{x}}
+                </option>
+            {% endfor %}
+        </select>
+        <br><br>
+    <input name="trait" type="submit" value="Få filmforslag!!">
+    </form>
+
+<br>
+<br>
+<br>
+
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+        {% for msg in messages %}
+            <p>{{msg}}</p>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+
+
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+
+<div style="text-align: right">
+<a href="/addTrait" style="margin-right: 235px;">Add another option to the list for this movie</a><a href="/report">Report something about this movie</a>
+</div>
+
+
+<!--fjerner den her confirm form resubmission message i browseren som jeg fik før-->
+<script>
+if ( window.history.replaceState ) {
+  window.history.replaceState( null, null, window.location.href );
+}
+</script>
+
+</body>
+</html>
