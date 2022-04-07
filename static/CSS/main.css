@@ -17,11 +17,7 @@ input:hover{
 cursor: pointer;
 }
 
-
 select{
-    -webkit-appearance:none;
-    -moz-appearance:none;
-    -ms-appearance:none;
     border: 0!important;
     background: #5c6664;
     color: #fff;
@@ -34,16 +30,4 @@ select{
 
 .select {
    position: relative;
-}
-
-.select::after {
-   content: '\25BC';
-   position: absolute;
-   top: 0;
-   right: 0;
-   padding: 0 1em;
-   background: #2b2e2e;
-   cursor:pointer;
-   pointer-events:none;
-   transition:.25s all ease;
 }
