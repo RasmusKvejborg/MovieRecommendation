@@ -1,1 +1,1 @@
-web: gunicorn AppWithPostgres:app
+web: gunicorn App:app
