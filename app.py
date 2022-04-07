@@ -1,40 +1,76 @@
 from flask import Flask, render_template, request, flash, session, Markup, redirect, url_for
 import cgi
-import sqlite3
+import psycopg2
+
+connect = psycopg2.connect(
+    host = "localhost",
+    dbname = "filmDataBase",
+    user = "postgres",
+    password = "postgres")
 
 class Film:
     def __init__(self, titel, karakteristika=None, årstal=None):
         self.titel = titel
-        self.karakteristika = karakteristika
+        self.karakteristika = [karakteristika]
         self.årstal = årstal
 
 
-# <editor-fold desc="DB Connect...">
-conn = sqlite3.connect('film.db', check_same_thread=False) #ændr ':memory:' til 'film.db' og ukommenter c.execute("""CREATE TABLE
-c = conn.cursor()
-# c.execute("""CREATE TABLE film (titel text,karakteristika text,årstal integer)""")
+# <editor-fold desc="DB connectect...">
+cur = connect.cursor()
+
+#
+# script = ''' CREATE TABLE filmpostgres (
+# titel varchar(40) NOT NULL,
+# karakteristika varchar(1000),
+# årstal int
+# ) '''
+# cur.execute(script)
+
+# script2 = "INSERT INTO filmpostgres (titel, karakteristika) VALUES('Aladdin','3 wishes')"
+# cur.execute(script2)
+# # #
+# cur.execute("select * from filpostgres")
+# rows = cur.fetchall()
+# print(f"{rows[2]}")
+
+
+
+
+
+
+# cur.execute("""CREATE TABLE filmpostgres (titel text,karakteristika text,årstal integer)""")
 # </editor-fold>
 
 def insertFilm(film):
     try:
-        if film.titel in getFilmByNameFetch(film.titel): # returner True hvis den kan finde en film i databases
+        if film.titel in getFilmByNameFetch(film.titel): # returner True hvis den kan finde en film i databases /SKAL TILFØJE ÅRSTAL HER ENGANG.
             print("halløj så findes den allerede i db")
     except TypeError:
         if isinstance(film.karakteristika, list):
             #for at sammensmeltes i een celle. Hvis der kun er én ting i listen, så sætter den intet kolon.
+            if film.årstal != "":
+                print("årstal er med, så jeg smider det ind")
                 film.karakteristika = ";".join(film.karakteristika)
-                with conn:
-                    c.execute("INSERT INTO film VALUES(?,?,?)", (film.titel, film.karakteristika, film.årstal,))
+                with connect:
+                    cur.execute("INSERT INTO filmpostgres VALUES(%s,%s,%s)", (film.titel, film.karakteristika, film.årstal,))
+            else:
+                print("årstal er IKKE med, så jeg smider bare titel og karkt ind")
+                film.karakteristika = ";".join(film.karakteristika)
+                with connect:
+                    cur.execute("INSERT INTO filmpostgres VALUES(%s,%s)",
+                                (film.titel, film.karakteristika,))
+
         else: #hvis det ikke er en liste, så tror jeg det gir problemer.
             print("indsat films karakteristika er ikke en liste.")
+            print(film.karakteristika)
 
 def getFilmByNameFetch(titel):
-    c.execute("SELECT * FROM film WHERE titel=?",(titel,)) #AND årstal=? når der kommer flere film med samme navn
-    return c.fetchone() #Har skrevet fetchone i stedet for fetchall så den ikke skal søge hele databasen igennem, da filmen nok er unik
+    cur.execute("SELECT * FROM filmpostgres WHERE titel=%s", (titel,)) #AND årstal=%s når der kommer flere film med samme navn
+    return cur.fetchone() #Har skrevet fetchone i stedet for fetchall så den ikke skal søge hele databasen igennem, da filmen nok er unik
 
 def fetchMovieNames():
-    c.execute("SELECT titel FROM film")
-    t = c.fetchall()
+    cur.execute("SELECT titel FROM filmpostgres")
+    t = cur.fetchall()
     flat_list = [] # det her og nedenfor laver en liste med tupler om til en alm liste.
     for sublist in t:
         for item in sublist:
@@ -43,17 +79,17 @@ def fetchMovieNames():
     return flat_list
 
 def altIDatabasenFetch():
-    for row in c.execute("select * from film"):
+    for row in cur.execute("select * from film"):
         print(row)
 
 def bestemtFilmKaraktFetch(titel): #denne formular og den nedenunder gør det samme. Denne gør det bare ikke godt nok.
-    c.execute("SELECT karakteristika FROM film WHERE titel=?",(titel,))  # AND årstal=? når der kommer flere film med samme navn
-    return list(c.fetchone())
+    cur.execute("SELECT karakteristika FROM filmpostgres WHERE titel=%s",(titel,))
+    return list(cur.fetchone())
 
 def traitsOfMovieFetch(titel): #her skal jeg også have årstal på, når der kommer flere film ind
-    c.execute("SELECT karakteristika FROM film WHERE titel=?",(titel,)) #AND årstal=? når der kommer flere film med samme navn
+    cur.execute("SELECT karakteristika FROM filmpostgres WHERE titel=%s",(titel,)) #AND årstal=%s når der kommer flere film med samme navn
     if titel:
-        t = c.fetchall()
+        t = cur.fetchall()
         flat_list = []  # det her og nedenfor laver en liste med tupler om til en alm liste.
         for sublist in t:
             for item in sublist:
@@ -63,18 +99,17 @@ def traitsOfMovieFetch(titel): #her skal jeg også have årstal på, når der ko
         flat_list = flat_list.split(";")
         return flat_list
     else:
-        return("no title in request.form")
+        return "no title in request.form"
 
 def updateKrakteristika(titel,karakteristika): #den virker nok ikke for den ved jo ikke hvilken karakteristika der skal opdateres, hvis der er flere.
-    with conn:
-        c.execute("""UPDATE film SET karakteristika = :karakteristika WHERE titel = :titel""", # AND årstal = :årstal""",
-                  {'titel': titel, 'karakteristika': karakteristika,})
+    with connect:
+        cur.execute('UPDATE filmpostgres SET karakteristika = %s WHERE titel = %s',(karakteristika,titel,))
     print("karakt updateret")
 
 def titelFromTraitFetch(karakteristika): #her skal jeg også have årstal på, når der kommer flere film ind
-    c.execute("SELECT titel FROM film WHERE karakteristika LIKE '%'||?||'%'",(karakteristika,)) #AND årstal=? når der kommer flere film med samme navn. LIKE '%'||?||'%' betyder ikke exact match.
+    cur.execute("SELECT titel FROM filmpostgres WHERE karakteristika ILIKE %(karakteristika)s", { 'karakteristika': '%{}%'.format(karakteristika)}) #AND årstal=%s når der kommer flere film med samme navn. LIKE '%'||?||'%' betyder ikke exact match.
     # "sci-fi;eventyr" er f.eks ikke exact match på "sci-fi". Så nu returner den alt der indeholder sci-fi. "sci-fi hvor hovedpersonen dør" er jo en ting som ik skal med, derfor skal jeg lave ekstra nedenfor for at sortere det væk.
-    t = c.fetchall()
+    t = cur.fetchall()
     flat_list = [] # det her og nedenfor laver en liste med tupler om til en alm liste.
     for sublist in t:
         for item in sublist:
@@ -97,9 +132,8 @@ def titelFromTraitFetch(karakteristika): #her skal jeg også have årstal på, n
     return sorted_list
 
 def removeFilm(titel):
-    with conn:
-        c.execute("DELETE FROM film WHERE titel = :titel",
-                  {'titel':titel})
+    with connect:
+        cur.execute("DELETE FROM filmpostgres WHERE titel = %s",(titel,))
     print("movie removed")
 
 def bindTraits(titel,traitToBeAppended):
@@ -145,12 +179,35 @@ def traitRemove(titel,traitToBeRemoved): #Skal huske, at den nok fjerner alle fo
         else:
             print("Traitet er forkert")
 
-    updateKrakteristika(titel,nyStreng) #hvis der er tildelt en ny streng, så kan vi indsætte den nye streng med traits i databasen i stedet for den gamle.
-    print("Trait deleted")
+    # updateKrakteristika(titel,nyStreng) #hvis der er tildelt en ny streng, så kan vi indsætte den nye streng med traits i databasen i stedet for den gamle.
+    # print("Trait deleted")
 
+# print(titelFromTraitFetch("3 wishes"))
+# removeFilm("Aladdin")
 
+# bindTraits("Law Abiding Citizen","hej")
+#
+# cur.execute("SELECT titel FROM filmpostgres WHERE karakteristika LIKE '%Flyvende tæppe%'")
+# print(cur.fetchall())
+# #
+#
+# karakteristika = "flyvende tæppe"
+#
+# cur.execute("SELECT titel FROM filmpostgres WHERE karakteristika ILIKE %(karakteristika)s", { 'karakteristika': '%{}%'.format(karakteristika)})
+# print(cur.fetchall())
+# cur.execute("SELECT titel FROM filmpostgres WHERE karakteristika LIKE %s",(karakteristika,))
 
+# print(traitsOfMovieFetch("Law Abiding Citizen"))
 
+print(titelFromTraitFetch("hej"))
+
+# print(getFilmByNameFetch('G.I.Joe'))
+
+# removeFilm("G.I.Joe")
+# print(getFilmByNameFetch("G.I.Joe"))
+# insertFilm("G.I.Joe")
+# fetchMovieNames() # virker heller ikke sgu da
+# bestemtFilmKaraktFetch("G.I.Joe")
 
 
 # inden publish:
@@ -179,13 +236,14 @@ def traitRemove(titel,traitToBeRemoved): #Skal huske, at den nok fjerner alle fo
 
 
 
-# web
+# module: web
 app = Flask(__name__)
 
 
 @app.route("/", methods=["GET", "POST"])
 
 def home():
+    print("HEJ FOR FAEN DEN NYE")
     # if 'trait3' in session: # fjerner lige sessionen, fordi jeg bruger den midlertidigt til at smide ind i forms, så de ikke skal indtaste igen. Rent bord
     #     print("trait3 var i session og er nu fjernet")
     #     session.pop('trait3')
@@ -203,7 +261,7 @@ def home():
 
 
 
-# select hvad du kan lide ved den specifikke film
+# 2 (select): vælg hvad du kan lide ved den specifikke film
 @app.route("/select", methods=["GET", "POST"])
 def select():
     if "movie" in request.form:
@@ -219,13 +277,13 @@ def select():
         for x in nyliste:   #når x >1 så virker det ikke. Hvorfor?
             if x != "str(movie)":  # "den film der lige er valgt, som den har glemt fordi vi har opdateret til en ny side":
                 flash(f"{x}", "info")
+                print(f"{x}")
                 # print(titelFromTraitFetch(trait)
                 # print(f"session er {session['valgtTrait']} og x er filen: {x}")
 
         #ja, nedenstående er spaghettikode, for jeg kan ikke helt forklare hvad der foregår. Men
         urlfor = url_for('addMovies',type=session['valgtTrait'])
-        flash(Markup("""<br><br><br>Mangler en film i listen? <a href={} class="alert-link">Tilføj den her</a>""".format(urlfor)))
-
+        flash(Markup("""<br><br><br>Mangler en film i listen? <a href={} class="alert-link">Tilføj den her</a> (skal også være muligt at tilføje en eksisterende film til traitet)""".format(urlfor)))
 
         if None in request.form:
             print("x")
@@ -249,9 +307,10 @@ def addMovies():
 # bind Movie
 @app.route("/bindMovie", methods=["GET", "POST"])
 def bindMovies():#dette navn er misvisende, for funktionen tilføjer egentlig bare movies... Det er først i Thankyou at den binder movies
-    if "addTrait" in request.form: # det her er fra /addTrait, at hvis man kommer derinde fra, så skal den lige tilføje traitet(det gøres altid på næste side af en grund)
-        session["trait3"] = request.form.get("trait3")
-        bindTraits(session['film'],session['trait3'])
+
+    if "search" in request.form:
+        session['film'] = request.form.get("search") #tager session inde fra addmovie // jeg kan godt se, hvad der er galt. Det hjælper helt klart at fjerne det her. For den laver sessionen om
+
 
 
     search = request.form.get("search")
@@ -260,6 +319,12 @@ def bindMovies():#dette navn er misvisende, for funktionen tilføjer egentlig ba
 
     session["movie"] = search
     session["trait3"] = trait3
+
+
+    if "addTrait" in request.form: # det her er fra /addTrait, at hvis man kommer derinde fra, så skal den lige tilføje traitet(det gøres altid på næste side af en grund)
+        session["trait3"] = request.form.get("trait3")
+        print(session['film'], session['trait3'])
+        bindTraits(session['film'],session['trait3'])
 
     if "searchform" in request.form:
         if len(search) < 2:
@@ -277,11 +342,17 @@ def bindMovies():#dette navn er misvisende, for funktionen tilføjer egentlig ba
 #thankyou
 @app.route("/thankyou", methods=["GET", "POST"])
 def thankyou(): #skal have kombineret de 2 film fra BindMovie siden
+    thankyoutext = Markup(f"<a href='/addTrait'>Tilføj endnu et trait til '{session['film']}'</a>")
+
+
     if "combine" in request.form:
         movie3 = request.form.get("movie3")
         bindTraits(movie3,session['trait3'])
 
-    thankyoutext = Markup(f"<a href='/addTrait'>Tilføj endnu et trait til '{session['film']}'</a>")
+
+
+
+
 
     return render_template("thankyou.html", thankyoutext=thankyoutext,)
 
@@ -322,5 +393,8 @@ if __name__ == "__main__":
     app.secret_key="lol"
     app.run(debug=True, use_reloader=False, port=8000) #use_reloader=False gør at ellers loader den 2 gange i debug mode (og så har vi balladen med at filmene er tilføjet een gang)
 
-conn.close()
+
+connect.commit() #til indsæt der skal bruges commit
+cur.close()
+connect.close()
 
