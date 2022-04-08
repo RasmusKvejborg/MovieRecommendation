@@ -7,7 +7,7 @@ connect = psycopg2.connect(
     dbname = "d871o598hou16e",
     user = "ntvbkqtnpwzevj",
     password = "882d0df267e2ce38ec994997b52e1a0bff78d949d3c3ad15b1b1e138b1fc4e6a",
-    port = "process.env.PORT || 5432")
+    port = "process.env.PORT || 5000")
 
 class Film:
     def __init__(self, titel, karakteristika=None, årstal=None):
