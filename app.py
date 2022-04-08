@@ -3,10 +3,11 @@ import cgi
 import psycopg2
 
 connect = psycopg2.connect(
-    host = "localhost",
+    host = "0.0.0.0",
     dbname = "filmDataBase",
     user = "postgres",
-    password = "postgres")
+    password = "postgres",
+    port = "process.env.PORT || 3000")
 
 class Film:
     def __init__(self, titel, karakteristika=None, årstal=None):
