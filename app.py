@@ -389,10 +389,12 @@ def addTrait():
 
 
 
-
+port = int(os.environ.get("PORT", 5000))
 if __name__ == "__main__":
     app.secret_key="lol"
-    app.run(host='0.0.0.0') #use_reloader=False gør at ellers loader den 2 gange i debug mode (og så har vi balladen med at filmene er tilføjet een gang)
+    app.run(host='0.0.0.0', port=port, debug=True) 
+    
+#use_reloader=False gør at ellers loader den 2 gange i debug mode (og så har vi balladen med at filmene er tilføjet een gang)
 
 
 connect.commit() #til indsæt der skal bruges commit
