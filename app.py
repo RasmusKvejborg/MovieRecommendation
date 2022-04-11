@@ -6,8 +6,7 @@ connect = psycopg2.connect(
     host = "ec2-18-210-64-223.compute-1.amazonaws.com",
     dbname = "d871o598hou16e",
     user = "ntvbkqtnpwzevj",
-    password = "882d0df267e2ce38ec994997b52e1a0bff78d949d3c3ad15b1b1e138b1fc4e6a",
-    port = "5432")
+    password = "882d0df267e2ce38ec994997b52e1a0bff78d949d3c3ad15b1b1e138b1fc4e6a")
 
 class Film:
     def __init__(self, titel, karakteristika=None, årstal=None):
