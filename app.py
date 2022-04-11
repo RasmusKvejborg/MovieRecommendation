@@ -388,7 +388,7 @@ def addTrait():
     return render_template("addTrait.html")
 
 
-port = int(os.getenv('PORT'))
+port = int(os.environ.get("PORT"))
 if __name__ == "__main__":
     app.secret_key="lol"
     app.run(host='0.0.0.0', port=port, debug=True) 
