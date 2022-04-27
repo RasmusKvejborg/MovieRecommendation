@@ -387,10 +387,9 @@ def addTrait():
     return render_template("addTrait.html")
 
 
-port = int(os.environ.get("PORT"))
 if __name__ == "__main__":
     app.secret_key="lol"
-    app.run(port=port, debug=True) 
+    app.run() 
     
 #use_reloader=False gør at ellers loader den 2 gange i debug mode (og så har vi balladen med at filmene er tilføjet een gang)
 
