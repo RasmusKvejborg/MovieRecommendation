@@ -31,3 +31,9 @@ select{
 .select {
    position: relative;
 }
+
+@media screen and (max-width: 400px) {
+    h2{
+        font-size: 25px;
+    }
+}

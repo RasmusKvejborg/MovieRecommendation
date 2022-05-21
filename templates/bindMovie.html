@@ -4,20 +4,24 @@
     <meta charset="UTF-8">
     <title>Bind movie</title>
     <link rel="stylesheet" href="{{url_for('static',filename='CSS/main.css')}}">
+    <meta content="width=device-width, initial-scale=1" name="viewport" />
+
 
 </head>
 <body>
 
 <br><br><br><br>
 
-
-    <form method="POST" action="/thankyou">
-
 <p>{{ text }}</p>
     <br>
-    Beskrivelsen passer også til denne film:
-        <select name="movie3" method="GET">
-        <option value="{{fetchMovieNames[0]}}" selected>
+    The description also fits this movie:
+
+    <form method="POST" action="/thankyou">
+        <select name="movie3" method="GET" required>
+
+
+        <option selected disabled value="">Select a movie</option>
+        <option value="{{fetchMovieNames[0]}}">
             {{fetchMovieNames[0]}}
         </option>
         {% for x in fetchMovieNames[1:] %}
@@ -41,7 +45,7 @@
         </a>
     </div>
 
-    <br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+    <br><br><br><br><br><br><br><br>
 
     <div style="text-align: center">
         <a href="{{url_for('addMovies',type=session['trait3'])}}">

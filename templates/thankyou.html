@@ -4,14 +4,16 @@
     <meta charset="UTF-8">
     <title>Thank you</title>
     <link rel="stylesheet" href="{{url_for('static',filename='CSS/main.css')}}">
+    <meta content="width=device-width, initial-scale=1" name="viewport" />
+
 </head>
 <body>
 <br><br>
 <form method="POST">
-    <p>Tak fordi du gør databasen bedre!</p>
+    <p>Thanks for improving the database!</p>
     <br>
     <p>{{ thankyoutext }}</p>
-    <p>eller</p>
+    <p>or</p>
 
 
 
@@ -19,16 +21,17 @@
 
             <div style="text-align: center">
             <a href="{{url_for('addMovies')}}">
-                Tilføj en ny film
+                Add a new movie
             </a>
         </div>
+</form>
 
- <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br>
+ <br> <br> <br> <br> <br> <br> <br>
 
 
     <div style="text-align: center">
     <a href="/">
-    <p>Tilbage til forsiden</p>
+    <p>Home</p>
     </a>
     </div>
 

@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <title>Select</title>
     <link rel="stylesheet" href="{{url_for('static',filename='CSS/main.css')}}">
+    <meta content="width=device-width, initial-scale=1" name="viewport" />
+
 </head>
 <body>
 <br>
@@ -12,10 +14,10 @@
 <!--2. hvad kunne du lide ved filmen?-->
 
     <form method="POST">
-        <h2>2. Hvad kunne du lide ved '{{session["film"]}}'?</h2>
+        <h2>What did you like about '{{session["film"]}}'?</h2>
         <br><br>
-        <select name="trait" method="GET">
-            <option selected disabled>Select a trait</option>
+        <select name="trait" method="GET" required>
+            <option selected disabled value="">Select a trait</option>
             <option value="{{traits[0]}}">
                 {{ traits[0] }}
             </option>
@@ -26,11 +28,9 @@
             {% endfor %}
         </select>
         <br><br>
-    <input name="trait" type="submit" value="Få filmforslag!!">
+    <input name="trait" type="submit" value="See suggestions!">
     </form>
 
-<br>
-<br>
 <br>
 
 {% with messages = get_flashed_messages() %}
@@ -43,29 +43,20 @@
 
 
 
-
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
 <br>
 <br>
 <br>
 <br>
 <br>
 
+<!-- style="text-align: right"-->
+<!--style="margin-right: 235px;"-->
+<div>
+<a href="/addTrait">Add another trait to this movie</a>
+    <br>
+    <br>
 
-<div style="text-align: right">
-<a href="/addTrait" style="margin-right: 235px;">Add another option to the list for this movie</a><a href="/report">Report something about this movie</a>
+    <a href="/report">Report something about this movie</a>
 </div>
 
 

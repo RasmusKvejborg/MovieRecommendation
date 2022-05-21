@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <title>Report</title>
     <link rel="stylesheet" href="{{url_for('static',filename='CSS/main.css')}}">
+    <meta content="width=device-width, initial-scale=1" name="viewport" />
+
 </head>
 <body>
 <br><br>
@@ -13,7 +15,7 @@
     <input name="titleReport" type="submit" value="Report the title">
 </form>
 
-<br>
+<br><br>
 
 <form method="POST">
     Or:
@@ -21,9 +23,11 @@
     Report a specific trait (select trait):
     <br>
     <br>
-        <select name="traitReportSelect" method="GET">
+        <select name="traitReportSelect" method="GET" required>
 
-            <option value="{{traits[0]}}" selected>
+            <option selected disabled value="">Select a trait to report</option>
+
+            <option value="{{traits[0]}}">
                 {{ traits[0] }}
             </option>
             {% for x in traits[1:] %}
@@ -48,19 +52,6 @@
 {% endwith %}
 
 
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
     <br>
     <br>
     <br>

@@ -2,21 +2,24 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Recommend me a movie</title>
+    <title>What To Watch Next</title>
     <link rel="stylesheet" href="{{url_for('static',filename='CSS/main.css')}}">
+    <meta content="width=device-width, initial-scale=1" name="viewport" />
 </head>
 <body>
 <br>
 <br>
-<h2>Recommend me a movie</h2>
+<h2>What To Watch Next</h2>
 <br>
 <br>
     <div class="select">
 <!--1. vælkg en film du har set før-->
 
     <form method="POST" action="/select">
-        <select name="movie" method="GET">
-                <option selected disabled>Vælg en film du har set før</option>
+        <select name="movie" method="GET" required>
+
+
+                <option selected disabled value="">Pick a movie you have seen before</option>
             <option value="{{fetchMovieNames[0]}}">
                 {{fetchMovieNames[0]}}
             </option>
@@ -28,20 +31,10 @@
         </select>
 
         <br><br>
-    <input name="vælg film" type="submit" value="Vælg film" id="vælgFilm">
+    <input name="vælg film" type="submit" value="Select movie" id="vælgFilm">
     </form>
+    </div>
 
-
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
         <br>
         <br>
         <br>
@@ -55,7 +48,7 @@
 <!--tilføj ny film til database-->
         <div style="text-align: center">
         <a href="/addMovie">
-        <p>Kan du ikke finde din favoritfilm? Tilføj den til databasen!</p>
+        <p>Can't find your movie? Add it!</p>
         </a>
         </div>
 

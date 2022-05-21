@@ -1,12 +1,14 @@
+import os
+
 from flask import Flask, render_template, request, flash, session, Markup, redirect, url_for
 import cgi
 import psycopg2
 
 connect = psycopg2.connect(
-    host = "ec2-18-210-64-223.compute-1.amazonaws.com",
-    dbname = "d871o598hou16e",
-    user = "ntvbkqtnpwzevj",
-    password = "882d0df267e2ce38ec994997b52e1a0bff78d949d3c3ad15b1b1e138b1fc4e6a")
+    host = "ec2-52-3-200-138.compute-1.amazonaws.com",
+    dbname = "dc7m0qvst92415",
+    user = "umfzbzftsroigb",
+    password = "428c01341ee236ab68c97d36de4ac3da2402559a9d89df75d53314e9c7329653")
 
 class Film:
     def __init__(self, titel, karakteristika=None, årstal=None):
@@ -15,8 +17,12 @@ class Film:
         self.årstal = årstal
 
 
-# <editor-fold desc="DB connectect...">
 cur = connect.cursor()
+
+
+
+
+
 
 #
 # script = ''' CREATE TABLE filmpostgres (
@@ -25,21 +31,11 @@ cur = connect.cursor()
 # årstal int
 # ) '''
 # cur.execute(script)
-
-# script2 = "INSERT INTO filmpostgres (titel, karakteristika) VALUES('Aladdin','3 wishes')"
+#
+# script2 = "INSERT INTO filmpostgres (titel, karakteristika) VALUES('Free Guy','main character is inside a fake world')"
 # cur.execute(script2)
-# # #
-# cur.execute("select * from filpostgres")
-# rows = cur.fetchall()
-# print(f"{rows[2]}")
 
 
-
-
-
-
-# cur.execute("""CREATE TABLE filmpostgres (titel text,karakteristika text,årstal integer)""")
-# </editor-fold>
 
 def insertFilm(film):
     try:
@@ -142,6 +138,9 @@ def bindTraits(titel,traitToBeAppended):
     # format til en liste med kommaer, der kan adskilles og arbejdes med. [0] er for at få listen udpakket, split er for at lave en ny liste
     toggle = True # den her skal bare sikre at vi kun tilføjer til databasen, hvis traitet ikke findes i forvejen.
     # Det er meget med vilje at det er gjort sådan her == items fordi det skal være muligt at tilføje ALT, medmindre det er HELT samme sætning
+
+    traitToBeAppended=traitToBeAppended.strip()
+
     for items in listeMedKarakteristika:
         if traitToBeAppended == items:
             print(f"karkteristika findes allerede på '{titel}': {listeMedKarakteristika}")
@@ -166,69 +165,24 @@ def traitRemove(titel,traitToBeRemoved): #Skal huske, at den nok fjerner alle fo
         # Ellers må den nemlig kun fjerne, hvis det er det eneste trait i listen. Nej hvis der er to traits, eller det er den sidste i strengen, skal den også fjerne
         nyStreng = streng1.replace(traitToBeRemovedMedSemikolon, "")
         print(f"fjernertrait med semokolon: {nyStreng}")
+        updateKrakteristika(titel,nyStreng)
     elif streng1.endswith(traitToBeRemovedMedSemikolon): #hvis det er den sidste streng i sætningen, skal den ikke tjekke om et semikolon findes til sidst.
         nyStreng = streng1.replace(traitToBeRemovedMedSemikolon, "")
+        updateKrakteristika(titel,nyStreng)
         print(f"Det var den sidste trait i strengen. Nu er den fjernet: {nyStreng}")
     elif streng1.startswith(traitToBeRemoved+";"):  # hvis det er den første streng i sætningen, skal den ikke tjekke om et semikolon findes først.
         nyStreng = streng1.replace(traitToBeRemoved+";", "")
         print(f"Det var den første trait i strengen. Nu er den fjernet: {nyStreng}")
+        updateKrakteristika(titel,nyStreng)
     else:
         if traitToBeRemoved == streng1: #Det her er fordi der findes ikke et semikolon, hvis bare der findes én trait. Så tjekker den lige om det er alt der er i strengen
             nyStreng = streng1.replace(traitToBeRemoved,"")
             print(f"fjerner trait uden semikolon: {nyStreng}")
+            updateKrakteristika(titel, nyStreng)
         else:
             print("Traitet er forkert")
 
-    # updateKrakteristika(titel,nyStreng) #hvis der er tildelt en ny streng, så kan vi indsætte den nye streng med traits i databasen i stedet for den gamle.
-    # print("Trait deleted")
 
-# print(titelFromTraitFetch("3 wishes"))
-# removeFilm("Aladdin")
-
-# bindTraits("Law Abiding Citizen","hej")
-#
-# cur.execute("SELECT titel FROM filmpostgres WHERE karakteristika LIKE '%Flyvende tæppe%'")
-# print(cur.fetchall())
-# #
-#
-# karakteristika = "flyvende tæppe"
-#
-# cur.execute("SELECT titel FROM filmpostgres WHERE karakteristika ILIKE %(karakteristika)s", { 'karakteristika': '%{}%'.format(karakteristika)})
-# print(cur.fetchall())
-# cur.execute("SELECT titel FROM filmpostgres WHERE karakteristika LIKE %s",(karakteristika,))
-
-# print(traitsOfMovieFetch("Law Abiding Citizen"))
-
-print(titelFromTraitFetch("hej"))
-
-# print(getFilmByNameFetch('G.I.Joe'))
-
-# removeFilm("G.I.Joe")
-# print(getFilmByNameFetch("G.I.Joe"))
-# insertFilm("G.I.Joe")
-# fetchMovieNames() # virker heller ikke sgu da
-# bestemtFilmKaraktFetch("G.I.Joe")
-
-
-# inden publish:
-# skal have lavet en footer, der giver kontaktoplysninger.
-# call to action farver.
-# eller
-# Den skal kun vise de film, der har en anden film combined
-
-
-# (optional, evt efter release) Tænk igennem hvordan Asger ville tilføje meget heri. Hvordan skal man kunne tilføje 1000 ting hurtigt?
-# (optional evt efter release) den skal være flot med CSS
-# (optional) bør nok lave noget med, at hvis man tilføjer en film, som allerede findes, så skal den sige, at den findes allerede. Du kan tilføje traitet til den ved at trykke her... (og så skal den jo loade værdierne...
-
-# DONE:
-# Den skal kunne combine (det laver jeg nok i aften)
-#Jeg skal kunne bede asger indtaste hver gang han har 2 film der ligner hinanden på et underligt punkt... DET SKAL VÆRE LET FOR HAM AT INDTASTE BEGGE med mulighed for det i combine movie link tilbage med Trait=session.
-# skal kunne søge i dropdowns
-## Og hvis han overser den ene i dropdown og tilføjer, så skal den advare, eller bare appende (sådan tror jeg det var i forvejen)
-# Den skal kunne appende nye traits...
-# jeg kunne gøre så man kunne add/remove traits... Jeg kunne også gøre så der er mulighed for at reporte/flagge med det samme
-# Under Thank you skal det være muligt at tilføje flere traits til session["movie"]
 
 
 
@@ -238,12 +192,12 @@ print(titelFromTraitFetch("hej"))
 
 # module: web
 app = Flask(__name__)
+app.secret_key = "lol"
 
 
 @app.route("/", methods=["GET", "POST"])
 
 def home():
-    print("HEJ FOR FAEN DEN NYE")
     # if 'trait3' in session: # fjerner lige sessionen, fordi jeg bruger den midlertidigt til at smide ind i forms, så de ikke skal indtaste igen. Rent bord
     #     print("trait3 var i session og er nu fjernet")
     #     session.pop('trait3')
@@ -256,11 +210,6 @@ def home():
     return render_template("index.html", fetchMovieNames=fetchMovieNames())
 
 
-
-
-
-
-
 # 2 (select): vælg hvad du kan lide ved den specifikke film
 @app.route("/select", methods=["GET", "POST"])
 def select():
@@ -271,7 +220,7 @@ def select():
     if "trait" in request.form:
         session["valgtTrait"] = request.form.get("trait")
         #kunne sikkert også have gavn af en session der gemte det vaglte trait
-        flash(f"Følgende film i databasen, der passer med '{session['valgtTrait']}':","info")
+        flash(f"Movies in the database that fits the description '{session['valgtTrait']}':","info")
 
         nyliste = titelFromTraitFetch(session['valgtTrait'])
         for x in nyliste:   #når x >1 så virker det ikke. Hvorfor?
@@ -283,7 +232,7 @@ def select():
 
         #ja, nedenstående er spaghettikode, for jeg kan ikke helt forklare hvad der foregår. Men
         urlfor = url_for('addMovies',type=session['valgtTrait'])
-        flash(Markup("""<br><br><br>Mangler en film i listen? <a href={} class="alert-link">Tilføj den her</a> (skal også være muligt at tilføje en eksisterende film til traitet)""".format(urlfor)))
+        flash(Markup("""<br><br><br>Missing a movie in the list? <a href={} class="alert-link">Add it!</a>""".format(urlfor)))
 
         if None in request.form:
             print("x")
@@ -335,14 +284,14 @@ def bindMovies():#dette navn er misvisende, for funktionen tilføjer egentlig ba
 
 
 
-    text = f"Kender du en anden film i listen, der passer denne beskrivelse: '{session['trait3']}'?"
+    text = f"Do you know another movie that fits the description: '{session['trait3']}'?"
 
     return render_template("bindMovie.html", text=text, fetchMovieNames=fetchMovieNames()) #fetchmovienames bruges til noget i html'en
 
-#thankyou
+#thankyoul
 @app.route("/thankyou", methods=["GET", "POST"])
 def thankyou(): #skal have kombineret de 2 film fra BindMovie siden
-    thankyoutext = Markup(f"<a href='/addTrait'>Tilføj endnu et trait til '{session['film']}'</a>")
+    thankyoutext = Markup(f"<a href='/addTrait'>Add another trait to '{session['film']}'</a>")
 
 
     if "combine" in request.form:
@@ -370,7 +319,6 @@ def report():
         removeFilm(session["film"])
 
     if "traitReport" in request.form:
-
         # hvorfor reagerer den ikke på nedenstående?
         reportedTrait = request.form.get("traitReportSelect")
         traitRemove(session["film"],reportedTrait)
@@ -387,14 +335,15 @@ def addTrait():
     return render_template("addTrait.html")
 
 
+
+
 if __name__ == "__main__":
-    app.secret_key="lol"
-    app.run() 
-    
-#use_reloader=False gør at ellers loader den 2 gange i debug mode (og så har vi balladen med at filmene er tilføjet een gang)
+    app.run(port = int(os.getenv('PORT',5000))) #use_reloader=False gør at ellers loader den 2 gange i debug mode (og så har vi balladen med at filmene er tilføjet een gang)
+    # HAR SKREVET ,5000 for det tror jeg er fint hvis det er local...
+
 
 
 connect.commit() #til indsæt der skal bruges commit
-cur.close()
-connect.close()
+# cur.close()
+# connect.close()
 
